@@ -1,0 +1,40 @@
+.player {
+  position: absolute;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 1;
+
+  &.not-selected {
+    transition: opacity 0.3s ease;
+  }
+
+}
+
+.circle {
+  width: 2.2vw;
+  border-radius: 100%;
+  box-shadow: rgba(0, 0, 0, 0.5) 5px 3px 10px, rgba(245, 222, 179, 0.5) -2px -2px 10px 1px;
+  aspect-ratio: 1;
+  border: 6px solid;
+  box-shadow: black 4px 2px 10px -3px;
+  opacity: 1;
+
+  &:hover {
+    opacity: 1;
+    transition: opacity 0.3s ease;
+    cursor: pointer;
+  }
+  // outline: none !important;
+  &:disabled {
+    transition: opacity 0.3s ease;
+  }
+
+  &.not-selected {
+    opacity: 0.7;
+    box-shadow: none;
+    transition: opacity 0.3s ease;
+    background-color: black;
+  }
+}

@@ -1,0 +1,39 @@
+  .button-party {
+    border: none;
+    font-size: 4rem;
+    cursor: pointer;
+    background-color: #ff6b6b;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    width: 100%;
+    transition: background-color 0.7s ease, color 0.3s ease;
+
+
+    &:hover {
+      background-color: #ff5252;
+    }
+  }
+
+.loader {
+  display: inline-flex;
+  gap: 10px;
+}
+.loader:before,
+.loader:after {
+  content: "";
+  height: 20px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side,#000 95%,#0000) 35% 35%/6px 6px no-repeat
+    #fff;
+  animation: l5 3s infinite;
+}
+@keyframes l5 {
+  0%,11%   {background-position:35% 35%}
+  14%,36%  {background-position:65% 35%}
+  38%,61%  {background-position:65% 65%}
+  64%,86%  {background-position:35% 65%}
+  88%,100% {background-position:35% 35%}
+}
