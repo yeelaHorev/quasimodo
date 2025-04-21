@@ -6,17 +6,16 @@ import { Player } from '../player/Player';
 import { Square } from '../square/Square';
 import './Board.scss';
 import { useNicknameContext } from '../../contexts/usernameContext';
+import { useMyTurnContext } from '../../contexts';
 
 export const Board: React.FC = () => {
     const [selectedPiece, setSelectedPiece] = useState<selectedPlayerPosition | null>(null);
     const { playersGameState,
         makeMove,
     } = useGameStateContext();
-    const { 
-        nickname
-    }
-        =
-        useNicknameContext()
+    const { myTurn } = useMyTurnContext()
+    const { nickname } = useNicknameContext()
+
     const choosePlayer = (row: number, col: number) => {
         if (!selectedPiece) {
             setSelectedPiece({ row, col })
@@ -80,26 +79,44 @@ export const Board: React.FC = () => {
                         const row = Math.floor(index / 8);
                         const col = index % 8;
                         const pieceA = playersGameState[nickname]
-                        ...
-                        if(pieceA)
-                        const piecesOnBoard = playersGameState ? Object.values(playersGameState)
-                            .map(playerGameState =>
-                                playerGameState.pieces.find(piece => piece.col === col && piece.row === row)
-                            )
-                            .find(piece => piece !== undefined)
+
+                        // const piecesOnBoard = playersGameState ? Object.values(playersGameState)
+                        //     .map(playerGameState =>
+                        //         playerGameState.pieces.find(piece => piece.col === col && piece.row === row)
+                        //     )
+                        //     .find(piece => piece !== undefined)
+                        //     : undefined;
+
+                        const pieceB = playersGameState
+                            ? Object.entries(playersGameState).find(([key]) => key !== nickname)?.[1]
                             : undefined;
+
+                        console.log("🚀 ~ {Colors.map ~ pieceB:", pieceB)
+                        const myPieces = pieceA
+                            ? pieceA.pieces.find(piece => piece.col === col && piece.row === row)
+                            : undefined;
+
+                        console.log("🚀 ~ {Colors.map ~ myPieces:", myPieces)
+
+                        const opponentPieces = pieceB
+                            ? pieceB.pieces.find(piece => piece.col === col && piece.row === row)
+                            : undefined;
+
+                        console.log("🚀 ~ {Colors.map ~ opponentPieces:", opponentPieces)
+
                         const isAvailable = availablePositionsOnBoard(index)
 
+                        const disabled = (opponentPieces || myPieces && myTurn === false) ? true : false
                         return (
                             <div key={index} className='container'>
-                                {piecesOnBoard &&
+                                {(myPieces || opponentPieces) &&
                                     <Player
-                                        isStarting={piecesOnBoard.isStarting}
+                                        myTurn={disabled}
+                                        isStarting={myPieces ? myTurn : !myTurn}
                                         isSelected={(col === selectedPiece?.col && row === selectedPiece.row)}
                                         onClick={() => choosePlayer(row, col)}
-                                        innerCircleColor={piecesOnBoard.color}
+                                        innerCircleColor={myPieces ? myPieces.color : opponentPieces ? opponentPieces.color : ""}
                                     />
-
                                 }
                                 <Square noPlayerSelected={!selectedPiece} color={color} onClick={() => {
                                     if (!selectedPiece) return
@@ -112,7 +129,8 @@ export const Board: React.FC = () => {
                         )
                     })}
                 </div>
-                : <></>
+                :
+                <></>
             } </>
     );
 };

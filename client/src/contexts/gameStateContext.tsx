@@ -3,6 +3,7 @@ import { PieceCoordinates, selectedPlayerPosition } from "../consts";
 import { Colors } from "../consts/Colors";
 import { socket } from "../main";
 import { useNicknameContext } from "./usernameContext";
+import { useMyTurnContext } from "./isMyTurnContext";
 
 type PlayerGameState = {
     pieces: PieceCoordinates[];
@@ -18,6 +19,8 @@ const GameStateContext = createContext<gameStateContext>({} as gameStateContext)
 
 export function GameStateProvider({ children }: { children: ReactNode }) {
     const { nickname } = useNicknameContext()
+    const { myTurn, setMyTurn } = useMyTurnContext()
+
     const [playersGameState, setPlayersGameState] = useState<Record<string, PlayerGameState> | null>(null);
 
     const me = playersGameState && playersGameState[nickname];
@@ -39,33 +42,10 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
 
         setPlayersGameState({
             [nickname]: { pieces: myPosition },
-            [users.find((key) => key !== nickname)!]: { pieces: opponentsPosition ,}
+            [users.find((key) => key !== nickname)!]: { pieces: opponentsPosition, }
         })
     };
 
-    // useEffect(() => {
-    //     socket.on("game-state", (data: string) => {
-    //         console.log('data: ', data);
-    //         setPlayersGameState((prev) => {
-    //             console.log()
-    //             let newState: typeof prev = {};
-    //             if (prev) newState = JSON.parse(JSON.stringify(prev))
-    //             newState && Object.keys(newState).forEach(player => {
-    //                 newState[player] = {
-    //                     pieces: newState[player].pieces.map(piece => ({
-    //                         ...piece,
-    //                         isStarting: player === data,
-    //                     })),
-    //                 };
-    //             });
-    //             console.log("new state is ", ...newState)
-    //             return newState;
-    //         });
-    //     });
-    //     return () => {
-    //         socket.off('game-state');
-    //     };
-    // }, [])
 
     const makeMove = (row: number, col: number, selectedPiece?: selectedPlayerPosition) => {
         if (selectedPiece && me) {
@@ -85,6 +65,7 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
                 });
             }
         }
+        setMyTurn(!myTurn)
     }
 
     useEffect(() => {

@@ -7,12 +7,13 @@ interface PlayerProps {
   innerCircleColor: string;
   onClick?: () => void;
   disabled?: boolean;
-  // myTurn?: boolean;o
+  myTurn: boolean;
   isSelected?: boolean;
 }
 
 
-export const Player: React.FC<PlayerProps> = ({ isSelected, innerCircleColor, onClick, isStarting }) => {
+export const Player: React.FC<PlayerProps> = ({ myTurn, isSelected, innerCircleColor, onClick, isStarting }) => {
+  console.log("🚀 ~ myTurn:", myTurn)
   const outerCircleColor = isStarting ? "black" : "white";
 
   return (
@@ -20,7 +21,7 @@ export const Player: React.FC<PlayerProps> = ({ isSelected, innerCircleColor, on
       className={clsx("player", isSelected ? "is-selected" : "not-selected")}
     >
       <button
-        // disabled={!myTurn}
+        disabled={myTurn}
         className={clsx("circle", isSelected ? "is-selected" : "not-selected")}
         onClick={onClick}
         style={{ borderColor: outerCircleColor, backgroundColor: innerCircleColor }} />

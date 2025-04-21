@@ -33,7 +33,6 @@ export const Room: React.FC = () => {
 
     useEffect(() => {
         if (playersGameState) {
-            console.log('playersGameState: ', playersGameState);
             setStages(3)
         }
     }, [playersGameState])
