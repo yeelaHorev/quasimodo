@@ -9,6 +9,7 @@ import { Board } from '../../components/board/Board';
 import { useGameStateContext } from '../../contexts/gameStateContext';
 import '../globalRoom/GlobalRoom.scss';
 import './Room.scss';
+import { useMyTurnContext } from '../../contexts';
 
 
 export const Room: React.FC = () => {
@@ -21,6 +22,7 @@ export const Room: React.FC = () => {
         playersGameState,
         addUsers
     } = useGameStateContext();
+    const { setIsStating, myTurn, isStarting, setMyTurn } = useMyTurnContext();
 
     const invitation = `רוצה להזמין אותך למשחק! ${nickname} -
     העתיקו את הקישור והתחילו לשחק!
@@ -35,27 +37,30 @@ export const Room: React.FC = () => {
         if (playersGameState) {
             setStages(3)
         }
-    }, [playersGameState])
+    }, [myTurn, isStarting, playersGameState])
 
     useEffect(() => {
         socket.on('entered-room', (data: string[]) => {
             addUsers(data)
             if (data.length === 2) {
-                socket.emit("randomize-turn")
+                socket.emit("randomize-turn", { data, roomId });
             }
         });
 
-        socket.on("randomize-turn", (data: string) => {
-            console.log("Starting IS ", data)
-        })
         return () => {
             socket.off('entered-room')
-            socket.off('randomize-turn')
-
         }
     }, [stages])
 
-
+    useEffect(() => {
+        socket.on("turn-start", ({ starter }) => {
+            setMyTurn(starter === nickname)
+            setIsStating(starter === nickname)
+        });
+        return () => {
+            socket.off('randomize-turn')
+        }
+    }, [nickname])
 
 
     const enterRoom = () => {

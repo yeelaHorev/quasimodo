@@ -5,17 +5,29 @@ import { Dispatch, ReactNode, SetStateAction, createContext, useContext, useStat
 type isMyTurnContext = {
     myTurn: boolean;
     setMyTurn: Dispatch<SetStateAction<boolean>>;
+    isStarting: boolean;
+    setIsStating: Dispatch<SetStateAction<boolean>>;
+    ChangeTurns: () => void
+
 }
 const IsMyTurnContext = createContext<isMyTurnContext>({} as isMyTurnContext);
 
 export function IsMyTurnProvider({ children }: { children: ReactNode }) {
     const [myTurn, setMyTurn] = useState<boolean>(false);
+    const [isStarting, setIsStating] = useState<boolean>(false);
+
+    const ChangeTurns = () => { 
+        setMyTurn(prevTurn => !prevTurn);
+    }
 
     return (
         <IsMyTurnContext.Provider
             value={{
                 myTurn,
-                setMyTurn
+                setMyTurn,
+                setIsStating,
+                isStarting,
+                ChangeTurns
             }}>
             {children}
         </IsMyTurnContext.Provider>

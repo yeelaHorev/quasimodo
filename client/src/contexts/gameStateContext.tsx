@@ -11,18 +11,19 @@ type PlayerGameState = {
 
 interface gameStateContext {
     playersGameState: Record<string, PlayerGameState> | null,
+    requestedColor: string;
     setPlayersGameState: Dispatch<SetStateAction<Record<string, PlayerGameState> | null>>,
+    setRequestedColor: Dispatch<SetStateAction<string>>;
     addUsers: (users: string[]) => void,
-    makeMove: (row: number, col: number, selectedPiece?: selectedPlayerPosition) => void
+    makeMove: (row: number, col: number, color: string, selectedPiece?: selectedPlayerPosition) => void
 }
 const GameStateContext = createContext<gameStateContext>({} as gameStateContext);
 
 export function GameStateProvider({ children }: { children: ReactNode }) {
     const { nickname } = useNicknameContext()
-    const { myTurn, setMyTurn } = useMyTurnContext()
-
     const [playersGameState, setPlayersGameState] = useState<Record<string, PlayerGameState> | null>(null);
-
+    const [requestedColor, setRequestedColor] = useState<string>("");
+    const { ChangeTurns } = useMyTurnContext()
     const me = playersGameState && playersGameState[nickname];
 
     const addUsers = (users: string[]) => {
@@ -44,10 +45,11 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
             [nickname]: { pieces: myPosition },
             [users.find((key) => key !== nickname)!]: { pieces: opponentsPosition, }
         })
+
     };
 
 
-    const makeMove = (row: number, col: number, selectedPiece?: selectedPlayerPosition) => {
+    const makeMove = (row: number, col: number, color: string, selectedPiece?: selectedPlayerPosition) => {
         if (selectedPiece && me) {
             const selectedPieceIndex = me?.pieces.findIndex(piece => {
                 return piece.col === selectedPiece.col && piece.row === selectedPiece.row
@@ -56,7 +58,7 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
                 const updatedPiecesInfo = [...me.pieces];
                 updatedPiecesInfo[selectedPieceIndex] =
                     { ...updatedPiecesInfo[selectedPieceIndex], row, col };
-                const target = { row, col }
+                const target = { row, col, color }
                 socket.emit('make-move', {
                     playerName: nickname,
                     updatedPiecesInfo,
@@ -65,7 +67,6 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
                 });
             }
         }
-        setMyTurn(!myTurn)
     }
 
     useEffect(() => {
@@ -74,17 +75,17 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
                 playerName: string,
                 pieces: PieceCoordinates[];
                 selectedPieceIndex: number,
-                target: selectedPlayerPosition
+                target: PieceCoordinates
             }) => {
             const { playerName, pieces, selectedPieceIndex, target } = data
             const isMe = playerName === nickname
-            const { row, col } = target
+            const { row, col, color } = target
             if (selectedPieceIndex !== -1) {
                 const updatedPiecesInfo = [...pieces];
                 updatedPiecesInfo[selectedPieceIndex] =
                     { ...updatedPiecesInfo[selectedPieceIndex], row, col };
-                const mirrorPieces = updatedPiecesInfo.map(({ col, row, color, isStarting }) => {
-                    return { row: 7 - row, col: 7 - col, color, isStarting }
+                const mirrorPieces = updatedPiecesInfo.map(({ col, row, color }) => {
+                    return { row: 7 - row, col: 7 - col, color }
                 })
                 setPlayersGameState((prev) => {
                     if (!prev) return prev;
@@ -93,6 +94,8 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
                         [playerName]: { pieces: isMe ? updatedPiecesInfo : mirrorPieces, }
                     });
                 })
+                ChangeTurns()
+                setRequestedColor(color)
             }
         })
         return () => {
@@ -104,6 +107,8 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
         <GameStateContext.Provider
             value={{
                 playersGameState,
+                requestedColor,
+                setRequestedColor,
                 setPlayersGameState,
                 addUsers,
                 makeMove

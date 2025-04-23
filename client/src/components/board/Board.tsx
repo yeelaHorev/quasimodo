@@ -12,9 +12,11 @@ export const Board: React.FC = () => {
     const [selectedPiece, setSelectedPiece] = useState<selectedPlayerPosition | null>(null);
     const { playersGameState,
         makeMove,
+        requestedColor
     } = useGameStateContext();
-    const { myTurn } = useMyTurnContext()
+    const { myTurn, isStarting } = useMyTurnContext()
     const { nickname } = useNicknameContext()
+
 
     const choosePlayer = (row: number, col: number) => {
         if (!selectedPiece) {
@@ -72,6 +74,7 @@ export const Board: React.FC = () => {
 
     return (
         <>
+            <h1 style={{ color: "white" }}>its lula turn</h1>
             {playersGameState ?
                 <div className='chessboard' >
 
@@ -80,39 +83,37 @@ export const Board: React.FC = () => {
                         const col = index % 8;
                         const pieceA = playersGameState[nickname]
 
-                        // const piecesOnBoard = playersGameState ? Object.values(playersGameState)
-                        //     .map(playerGameState =>
-                        //         playerGameState.pieces.find(piece => piece.col === col && piece.row === row)
-                        //     )
-                        //     .find(piece => piece !== undefined)
-                        //     : undefined;
-
                         const pieceB = playersGameState
                             ? Object.entries(playersGameState).find(([key]) => key !== nickname)?.[1]
                             : undefined;
 
-                        console.log("🚀 ~ {Colors.map ~ pieceB:", pieceB)
                         const myPieces = pieceA
                             ? pieceA.pieces.find(piece => piece.col === col && piece.row === row)
                             : undefined;
 
-                        console.log("🚀 ~ {Colors.map ~ myPieces:", myPieces)
 
                         const opponentPieces = pieceB
                             ? pieceB.pieces.find(piece => piece.col === col && piece.row === row)
                             : undefined;
 
-                        console.log("🚀 ~ {Colors.map ~ opponentPieces:", opponentPieces)
 
                         const isAvailable = availablePositionsOnBoard(index)
-
-                        const disabled = (opponentPieces || myPieces && myTurn === false) ? true : false
+                        let disabled = false
+                        if (!myTurn) {
+                            disabled = true
+                        }
+                        else if (!myPieces) {
+                            disabled = true
+                        }
+                        else if (myPieces && requestedColor) {
+                            disabled = myPieces.color !== requestedColor
+                        } else disabled = false
                         return (
                             <div key={index} className='container'>
                                 {(myPieces || opponentPieces) &&
                                     <Player
                                         myTurn={disabled}
-                                        isStarting={myPieces ? myTurn : !myTurn}
+                                        isStarting={myPieces ? isStarting : !isStarting}
                                         isSelected={(col === selectedPiece?.col && row === selectedPiece.row)}
                                         onClick={() => choosePlayer(row, col)}
                                         innerCircleColor={myPieces ? myPieces.color : opponentPieces ? opponentPieces.color : ""}
@@ -120,7 +121,7 @@ export const Board: React.FC = () => {
                                 }
                                 <Square noPlayerSelected={!selectedPiece} color={color} onClick={() => {
                                     if (!selectedPiece) return
-                                    makeMove(row, col, selectedPiece)
+                                    makeMove(row, col, color, selectedPiece)
                                     setSelectedPiece(null)
                                 }
                                 }

@@ -5,9 +5,9 @@ import {
   WebSocketGateway,
   WebSocketServer,
 } from '@nestjs/websockets';
-import { Server } from 'http';
+// import { Server } from 'http';
 import { RedisClientType, createClient } from 'redis';
-import { Socket } from 'socket.io';
+import { Socket, Server } from 'socket.io';
 
 @WebSocketGateway({ cors: { origin: '*' }, transports: ['websocket'] })
 export class SocketGateway {
@@ -59,6 +59,23 @@ export class SocketGateway {
     }
   }
 
+  @SubscribeMessage('randomize-turn')
+  async randomizeTurn(
+    @ConnectedSocket() socket: Socket,
+    @MessageBody() body: { data: string[], roomId: string }
+  ) {
+    try {
+      const { data, roomId } = body
+      if (data.length !== 2) return;
+      const random = Math.floor(Math.random() * 2);
+      const starter = data[random];
+      this.server.to(roomId).emit("turn-start", { starter });
+      socket.broadcast.emit("randomize-turn", { starter });
+      return starter
+    } catch (err) {
+      console.error('Error randomizing turn:', err);
+    }
+  }
 
 
   @SubscribeMessage('create-room')
@@ -98,7 +115,7 @@ export class SocketGateway {
       playerName: string;
       updatedPiecesInfo: { pieces: { col: number; row: number }[] };
       selectedPieceIndex: number;
-      target: { row: number; col: number };
+      target: { row: number; col: number, color: string };
     },
   ) {
     const { playerName, selectedPieceIndex, target } = payload;
