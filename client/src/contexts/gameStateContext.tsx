@@ -12,8 +12,10 @@ type PlayerGameState = {
 interface gameStateContext {
     playersGameState: Record<string, PlayerGameState> | null,
     requestedColor: string;
+    winner: string;
     setPlayersGameState: Dispatch<SetStateAction<Record<string, PlayerGameState> | null>>,
     setRequestedColor: Dispatch<SetStateAction<string>>;
+    setWinner: Dispatch<SetStateAction<string>>;
     addUsers: (users: string[]) => void,
     makeMove: (row: number, col: number, color: string, selectedPiece?: selectedPlayerPosition) => void
 }
@@ -23,6 +25,8 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
     const { nickname } = useNicknameContext()
     const [playersGameState, setPlayersGameState] = useState<Record<string, PlayerGameState> | null>(null);
     const [requestedColor, setRequestedColor] = useState<string>("");
+    const [winner, setWinner] = useState<string>("");
+
     const { ChangeTurns } = useMyTurnContext()
     const me = playersGameState && playersGameState[nickname];
 
@@ -80,6 +84,10 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
             const { playerName, pieces, selectedPieceIndex, target } = data
             const isMe = playerName === nickname
             const { row, col, color } = target
+            if(row === 0) {
+                setWinner(playerName)
+                return
+            }
             if (selectedPieceIndex !== -1) {
                 const updatedPiecesInfo = [...pieces];
                 updatedPiecesInfo[selectedPieceIndex] =
@@ -108,10 +116,12 @@ export function GameStateProvider({ children }: { children: ReactNode }) {
             value={{
                 playersGameState,
                 requestedColor,
+                winner,
                 setRequestedColor,
                 setPlayersGameState,
                 addUsers,
-                makeMove
+                makeMove,
+                setWinner
             }}>
             {children}
         </GameStateContext.Provider>

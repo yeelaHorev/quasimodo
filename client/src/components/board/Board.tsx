@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { PieceCoordinates, selectedPlayerPosition } from '../../consts';
 import { Colors } from '../../consts/Colors';
+import { useMyTurnContext } from '../../contexts';
 import { useGameStateContext } from '../../contexts/gameStateContext';
+import { useNicknameContext } from '../../contexts/usernameContext';
+import EndGame from '../end/EndGame';
 import { Player } from '../player/Player';
 import { Square } from '../square/Square';
 import './Board.scss';
-import { useNicknameContext } from '../../contexts/usernameContext';
-import { useMyTurnContext } from '../../contexts';
 
 export const Board: React.FC = () => {
     const [selectedPiece, setSelectedPiece] = useState<selectedPlayerPosition | null>(null);
     const { playersGameState,
         makeMove,
-        requestedColor
+        requestedColor,
+        winner
     } = useGameStateContext();
     const { myTurn, isStarting } = useMyTurnContext()
     const { nickname } = useNicknameContext()
@@ -74,64 +76,77 @@ export const Board: React.FC = () => {
 
     return (
         <>
-            <h1 style={{ color: "white" }}>its lula turn</h1>
-            {playersGameState ?
-                <div className='chessboard' >
-
-                    {Colors.map((color, index) => {
-                        const row = Math.floor(index / 8);
-                        const col = index % 8;
-                        const pieceA = playersGameState[nickname]
-
-                        const pieceB = playersGameState
-                            ? Object.entries(playersGameState).find(([key]) => key !== nickname)?.[1]
-                            : undefined;
-
-                        const myPieces = pieceA
-                            ? pieceA.pieces.find(piece => piece.col === col && piece.row === row)
-                            : undefined;
+            {winner ?
+                <EndGame onPlayAgain={() => { }} winnerName={winner} />
+                : <>
+                    <h1
+                        className={`turn-banner ${(isStarting && myTurn) || (!isStarting && !myTurn)
+                                ? "black-turn"
+                                : "white-turn"
+                            }`}
+                    >
+                        It's {myTurn ? "your" : "opponent's"} turn!
+                    </h1>
 
 
-                        const opponentPieces = pieceB
-                            ? pieceB.pieces.find(piece => piece.col === col && piece.row === row)
-                            : undefined;
+                    {
+                        playersGameState ?
+                            <div className='chessboard' >
+                                {Colors.map((color, index) => {
+                                    const row = Math.floor(index / 8);
+                                    const col = index % 8;
+                                    const pieceA = playersGameState[nickname]
+
+                                    const pieceB = playersGameState
+                                        ? Object.entries(playersGameState).find(([key]) => key !== nickname)?.[1]
+                                        : undefined;
+
+                                    const myPieces = pieceA
+                                        ? pieceA.pieces.find(piece => piece.col === col && piece.row === row)
+                                        : undefined;
 
 
-                        const isAvailable = availablePositionsOnBoard(index)
-                        let disabled = false
-                        if (!myTurn) {
-                            disabled = true
-                        }
-                        else if (!myPieces) {
-                            disabled = true
-                        }
-                        else if (myPieces && requestedColor) {
-                            disabled = myPieces.color !== requestedColor
-                        } else disabled = false
-                        return (
-                            <div key={index} className='container'>
-                                {(myPieces || opponentPieces) &&
-                                    <Player
-                                        myTurn={disabled}
-                                        isStarting={myPieces ? isStarting : !isStarting}
-                                        isSelected={(col === selectedPiece?.col && row === selectedPiece.row)}
-                                        onClick={() => choosePlayer(row, col)}
-                                        innerCircleColor={myPieces ? myPieces.color : opponentPieces ? opponentPieces.color : ""}
-                                    />
-                                }
-                                <Square noPlayerSelected={!selectedPiece} color={color} onClick={() => {
-                                    if (!selectedPiece) return
-                                    makeMove(row, col, color, selectedPiece)
-                                    setSelectedPiece(null)
-                                }
-                                }
-                                    disabled={!isAvailable} />
+                                    const opponentPieces = pieceB
+                                        ? pieceB.pieces.find(piece => piece.col === col && piece.row === row)
+                                        : undefined;
+
+
+                                    const isAvailable = availablePositionsOnBoard(index)
+                                    let disabled = false
+                                    if (!myTurn) {
+                                        disabled = true
+                                    }
+                                    else if (!myPieces) {
+                                        disabled = true
+                                    }
+                                    else if (myPieces && requestedColor) {
+                                        disabled = myPieces.color !== requestedColor
+                                    } else disabled = false
+                                    return (
+                                        <div key={index} className='container'>
+                                            {(myPieces || opponentPieces) &&
+                                                <Player
+                                                    myTurn={disabled}
+                                                    isStarting={myPieces ? isStarting : !isStarting}
+                                                    isSelected={(col === selectedPiece?.col && row === selectedPiece.row)}
+                                                    onClick={() => choosePlayer(row, col)}
+                                                    innerCircleColor={myPieces ? myPieces.color : opponentPieces ? opponentPieces.color : ""}
+                                                />
+                                            }
+                                            <Square noPlayerSelected={!selectedPiece} color={color} onClick={() => {
+                                                if (!selectedPiece) return
+                                                makeMove(row, col, color, selectedPiece)
+                                                setSelectedPiece(null)
+                                            }
+                                            }
+                                                disabled={!isAvailable} />
+                                        </div>
+                                    )
+                                })}
                             </div>
-                        )
-                    })}
-                </div>
-                :
-                <></>
+                            :
+                            <></>}
+                </>
             } </>
     );
 };

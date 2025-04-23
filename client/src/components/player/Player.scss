@@ -1,40 +1,55 @@
+@keyframes bouncePulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.08);
+  }
+}
+
 .player {
   position: absolute;
   z-index: 2;
   display: flex;
   align-items: center;
   justify-content: center;
-  opacity: 1;
-
-  &.not-selected {
-    transition: opacity 0.3s ease;
-  }
-
 }
 
 .circle {
   width: 2.2vw;
-  border-radius: 100%;
-  box-shadow: rgba(0, 0, 0, 0.5) 5px 3px 10px, rgba(245, 222, 179, 0.5) -2px -2px 10px 1px;
   aspect-ratio: 1;
+  border-radius: 100%;
   border: 6px solid;
-  box-shadow: black 4px 2px 10px -3px;
+  transition: all 0.3s ease;
   opacity: 1;
-
-  &:hover {
-    opacity: 1;
-    transition: opacity 0.3s ease;
-    cursor: pointer;
-  }
-  // outline: none !important;
-  &:disabled {
-    transition: opacity 0.3s ease;
-  }
+  background-color: white;
 
   &.not-selected {
     opacity: 0.7;
     box-shadow: none;
-    transition: opacity 0.3s ease;
     background-color: black;
+  }
+
+  &:not(:disabled) {
+    cursor: pointer;
+    box-shadow: 0 0 12px 3px rgba(255, 255, 255, 0.9),
+                black 4px 2px 10px -3px;
+
+    // 👇 Bouncy idle animation!
+    animation: bouncePulse 1.2s ease-in-out infinite;
+
+    &:hover {
+      transform: scale(1.1);
+      box-shadow: 0 0 16px 4px rgba(255, 255, 255, 1),
+                  black 4px 2px 12px -2px;
+      animation: none; // Stop bouncing on hover
+    }
+  }
+
+  &:disabled {
+    opacity: 0.4;
+    box-shadow: none;
+    cursor: not-allowed;
+    animation: none;
   }
 }

@@ -4,26 +4,43 @@
   align-items: center;
   justify-content: center;
   height: 100vh;
+  padding: 0 15px; /* Add some padding on the sides for small screens */
 }
 
-.go-back-btn {
-  padding: 10px 20px;
-  background-color: #f44336;
+#back {
+  padding: 8px 16px;
+  background: linear-gradient(120deg, #2980b9, #8e44ad);
   color: white;
-  border: none;
+  border: 1px solid #607d8b;  // Matches the background color, creating a subtle outline
   border-radius: 5px;
-  font-size: 16px;
-  margin-bottom: 20px;
+  font-size: 14px;
   cursor: pointer;
-  transition: background-color 0.3s ease;
-  &:hover{
-    background-color: #d32f2f;
+  transition: all 0.3s ease;
+  position: absolute !important;
+  top: 10px !important;
+  left: 10px !important;
+  margin-bottom: 20px !important;
+
+  /* Minimalistic hover effect */
+  &:hover {
+    background-color: #4e5d64;  // Slightly darker shade for hover
+    border-color: #4e5d64;      // Matches the hover background for consistency
   }
-  &:disabled{
-    background-color: #f44336;
+
+  /* Disabled state */
+  &:disabled {
+    background-color: #b0bec5;  // Lighter grey when disabled
+    border-color: #b0bec5;
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.6;
   }
+
+  /* Focus state for accessibility */
+  &:focus {
+    outline: 2px solid #3b4d56;  // A subtle focus indicator
+    outline-offset: 2px;
+  }
+
 }
 
 .custom-btn {
@@ -39,4 +56,19 @@
 
 .custom-btn:hover {
   background-color: #388e3c;
+}
+
+/* Media Queries for Responsiveness */
+@media screen and (max-width: 600px) {
+  .go-back-btn {
+    font-size: 14px;
+    padding: 8px 15px;
+    top: 5px;
+    left: 5px;
+  }
+
+  .custom-btn {
+    font-size: 18px;
+    padding: 12px 25px;
+  }
 }

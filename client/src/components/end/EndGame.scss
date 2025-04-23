@@ -1,0 +1,131 @@
+.end-game-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+    color: white;
+    text-align: center;
+    padding: 20px;
+    box-sizing: border-box;
+    background-color: rgb(19, 4, 45);
+    animation: fadeIn 1s ease-in-out;
+    font-family: 'Roboto', sans-serif;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+    }
+
+    100% {
+        opacity: 1;
+    }
+}
+
+.winner-message {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+    letter-spacing: 5px;
+    animation: glowingText 1.5s infinite alternate;
+    color: #ff6a00;
+}
+
+
+
+.winner-name {
+    font-size: 4rem;
+    font-weight: 600;
+    margin-top: 0.5rem;
+    background: -webkit-linear-gradient(45deg, #ff6a00, #ee0979);
+    -webkit-background-clip: text;
+    color: transparent;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    animation: winnerFadeIn 2s ease-out;
+}
+
+@keyframes winnerFadeIn {
+    0% {
+        opacity: 0;
+        transform: translateY(50px);
+    }
+
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.play-again-button {
+    padding: 12px 30px;
+    background-color: #ff6a00;
+    color: white;
+    font-size: 1.2rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+    transition: background-color 0.3s ease, transform 0.3s ease;
+    animation: pulse 1.5s infinite;
+
+    &:hover {
+        background-color: #ff6a0097;
+        transform: scale(1.1);
+    }
+
+    &:active {
+        transform: scale(0.98);
+    }
+
+    @media (max-width: 600px) {
+        font-size: 1rem;
+        padding: 10px 25px;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    100% {
+        transform: scale(1);
+    }
+}
+
+@media (max-width: 768px) {
+    .end-game-wrapper {
+        padding: 40px 20px;
+    }
+
+    .winner-message {
+        font-size: 2rem;
+    }
+
+    .winner-name {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .winner-message {
+        font-size: 1.8rem;
+    }
+
+    .winner-name {
+        font-size: 2rem;
+    }
+
+    .play-again-button {
+        padding: 10px 25px;
+        font-size: 1rem;
+    }
+}

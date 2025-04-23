@@ -29,6 +29,7 @@ export const Room: React.FC = () => {
     
     http://localhost:5173${pathname}
     `
+    
     useEffect(() => {
         !nickname && roomId && checkIfRoomExists()
     }, [nickname])
@@ -89,7 +90,7 @@ export const Room: React.FC = () => {
 
     return (
         <div className="room-container">
-            <Button className="go-back-btn" onClick={handleGoBackButton}>Go Back</Button>
+            <Button className="go-back-btn" id="back" onClick={handleGoBackButton}>Go Back</Button>
             {!stages ?
                 <div style={{ height: "100vh", width: "100vw", backgroundColor: "black" }} >
                     <h1 color='yellow'>ROOM NOT EXISTS</h1>

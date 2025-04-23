@@ -82,6 +82,7 @@ export class SocketGateway {
   async createRoom(client: Socket) {
     try {
       const roomCode = this.generateRoomCode();
+      console.log("🚀 ~ SocketGateway ~ createRoom ~ roomCode:", roomCode)
       await this.redisClient.set(`room-id-${roomCode}`, 1);
       client.join(roomCode);
       return roomCode;

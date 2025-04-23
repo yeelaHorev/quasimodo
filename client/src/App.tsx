@@ -4,6 +4,7 @@ import { GlobalRoom, Room } from './pages';
 import { GameStateProvider, IsMyTurnProvider, NicknameProvider } from './contexts';
 
 function App() {
+  
   return (
     <>
       <NicknameProvider>

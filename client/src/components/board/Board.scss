@@ -43,6 +43,46 @@
   }
 }
 
+
+@keyframes pulseText {
+  0% {
+    transform: scale(1);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+
+  50% {
+    transform: scale(1.05);
+    text-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  }
+
+  100% {
+    transform: scale(1);
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.turn-banner {
+  font-size: 2rem;
+  padding: 1rem 2rem;
+  text-align: center;
+  border-radius: 1rem;
+  font-weight: bold;
+  animation: pulseText 1.5s infinite ease-in-out;
+  transition: all 0.3s ease;
+}
+
+.black-turn {
+  background-color: white;
+  color: black;
+}
+
+.white-turn {
+  background-color: black;
+  color: white;
+}
+
+
+
 .brown {
   background-color: #A0522D;
 }

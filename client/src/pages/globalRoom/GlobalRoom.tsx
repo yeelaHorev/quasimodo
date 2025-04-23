@@ -1,18 +1,16 @@
+import { Button } from '@mui/material';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { socket } from '../../main';
 import './GlobalRoom.scss';
-import { Button } from '@mui/material';
-import { useMyTurnContext } from '../../contexts';
 
 export const GlobalRoom: React.FC = () => {
     const [roomId, setRoomId] = useState<string>("")
-    const { setMyTurn } = useMyTurnContext()
 
     const navigate = useNavigate()
 
     const createRoom = () => {
-        setMyTurn(true)
+        console.log("hikjij")
         socket.emit('create-room', (roomCode: string) => {
             navigate(`/room/${roomCode}`);
         });
