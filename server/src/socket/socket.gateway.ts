@@ -82,7 +82,6 @@ export class SocketGateway {
   async createRoom(client: Socket) {
     try {
       const roomCode = this.generateRoomCode();
-      console.log("🚀 ~ SocketGateway ~ createRoom ~ roomCode:", roomCode)
       await this.redisClient.set(`room-id-${roomCode}`, 1);
       client.join(roomCode);
       return roomCode;
@@ -104,10 +103,15 @@ export class SocketGateway {
     return Math.random().toString(36).substring(2, 8);
   }
 
-  // @SubscribeMessage('game-state')
-  // async gameState(@MessageBody() payload: { roomId: SVGFESpecularLightingElement, nickname: string }) {
-  //       this.server.emit('game-state', payload.nickname);
-  // }
+  @SubscribeMessage('leave-room')
+  async handleLeaveRoom(client: Socket, payload: { roomId: string }) {
+    const { roomId } = payload;
+    client.leave(roomId);
+    this.server.to(roomId).emit('opponent-left');
+    await this.redisClient.del(`room-users-${roomId}`);
+    return true
+  }
+  
 
   @SubscribeMessage('make-move')
   async makeMove(

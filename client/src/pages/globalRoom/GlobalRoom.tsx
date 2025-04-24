@@ -10,7 +10,6 @@ export const GlobalRoom: React.FC = () => {
     const navigate = useNavigate()
 
     const createRoom = () => {
-        console.log("hikjij")
         socket.emit('create-room', (roomCode: string) => {
             navigate(`/room/${roomCode}`);
         });

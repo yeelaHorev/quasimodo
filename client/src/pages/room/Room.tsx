@@ -29,7 +29,23 @@ export const Room: React.FC = () => {
     
     http://localhost:5173${pathname}
     `
-    
+
+    useEffect(() => {
+        if (!socket) return;
+        const handleOpponentLeft = () => {
+            alert('Your opponent has left the game.');
+            navigate('/');
+        };
+
+        socket.on('opponent-left', handleOpponentLeft);
+
+        // Cleanup on unmount
+        return () => {
+            socket.off('opponent-left', handleOpponentLeft);
+        };
+    }, []);
+
+
     useEffect(() => {
         !nickname && roomId && checkIfRoomExists()
     }, [nickname])
@@ -85,7 +101,10 @@ export const Room: React.FC = () => {
     };
 
     const handleGoBackButton = () => {
-        navigate("/");
+        socket.emit('leave-room', { roomId }, (data: boolean) => {
+            console.log('data: ', data);
+            navigate('/');
+        });
     };
 
     return (
